@@ -257,6 +257,7 @@ class Service extends BaseService
             $method = $this->getMethodFromOperation($operation);
             $parameters = array_values($urlParameters);
             if ($this->isMethodPostPutOrPatch($method)) {
+                $parameters = array_filter($parameters, function($p) { return $p['in'] !== 'query'; });
                 $parameters[] = $this->getPostPatchPutBodyParameter();
             }
             $pathOperation = $this->getPathOperation($operation, $parameters, $isCollection);
@@ -576,7 +577,7 @@ class Service extends BaseService
     {
         foreach ($this->getAllOperations() as $operation) {
             $method = $this->getMethodFromOperation($operation);
-            if ($method === 'post') {
+            if ($method === 'post' || $method === 'patch') {
                 return $operation->getRequestDescription();
             }
         }
